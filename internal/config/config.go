@@ -13,7 +13,3 @@ func GetDefaultAppConfig() AppConfig {
 		IgnoreUncommittedChanges: false,
 	}
 }
-
-func (config *AppConfig) Validate() {
-
-}

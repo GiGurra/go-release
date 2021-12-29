@@ -25,9 +25,7 @@ func main() {
 		appConfig := config.GetDefaultAppConfig()
 		appConfig.Version = c.String(config.CliFlags.Version.Name)
 		appConfig.IgnoreUncommittedChanges = c.Bool(config.CliFlags.IgnoreUncommittedChanges.Name)
-		complementConfig(&appConfig)
-		appConfig.Validate()
-		run(appConfig)
+		run(&appConfig)
 		return nil
 	}
 
@@ -37,17 +35,35 @@ func main() {
 	}
 }
 
-func run(appConfig config.AppConfig) {
-
-	if !appConfig.IgnoreUncommittedChanges && hasUncommittedChanges() {
-		log.Fatalf("Cannot release because repo has uncommitted changes\n")
-	}
-
+func run(appConfig *config.AppConfig) {
+	checkUncommittedChanges(appConfig)
+	buildModule(appConfig)
+	figureOutModuleName(appConfig)
+	figureOutVersion(appConfig)
+	tagInGitAndPush(appConfig)
 	log.Printf("Building %+v...\n", appConfig)
 }
 
-func complementConfig(appConfig *config.AppConfig) {
+func tagInGitAndPush(appConfig *config.AppConfig) {
+	shell.RunCommand("git", "tag", appConfig.Version)
+	shell.RunCommand("git", "push", "origin", appConfig.Version)
+}
+
+func checkUncommittedChanges(appConfig *config.AppConfig) {
+	if !appConfig.IgnoreUncommittedChanges && hasUncommittedChanges() {
+		log.Fatalf("Cannot release because repo has uncommitted changes\n")
+	}
+}
+
+func buildModule(appConfig *config.AppConfig) {
+	shell.RunCommand("go", "build", ".")
+}
+
+func figureOutModuleName(appConfig *config.AppConfig) {
 	appConfig.Module = getCurrentModuleName()
+}
+
+func figureOutVersion(appConfig *config.AppConfig) {
 	if appConfig.Version == "" {
 		appConfig.Version = getCurrentModuleVersion(appConfig.Module)
 	}
