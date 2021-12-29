@@ -49,22 +49,32 @@ func tagInGitAndPush(appConfig *config.AppConfig) {
 }
 
 func checkUncommittedChanges(appConfig *config.AppConfig) {
-	if !appConfig.IgnoreUncommittedChanges && hasUncommittedChanges() {
-		log.Fatalf("Cannot release because repo has uncommitted changes\n")
+	if !appConfig.IgnoreUncommittedChanges {
+		log.Printf("Checking for uncommitted changes...")
+		if hasUncommittedChanges() {
+			log.Fatalf("Cannot release because repo has uncommitted changes\n")
+		}
+		log.Printf("ok\n")
 	}
 }
 
 func buildModule(appConfig *config.AppConfig) {
+	log.Printf("Building module...")
 	shell.RunCommand("go", "build", ".")
+	log.Printf("ok\n")
 }
 
 func figureOutModuleName(appConfig *config.AppConfig) {
+	log.Printf("Finding module name...")
 	appConfig.Module = getCurrentModuleName()
+	log.Printf("ok: %s\n", appConfig.Module)
 }
 
 func figureOutVersion(appConfig *config.AppConfig) {
 	if appConfig.Version == "" {
+		log.Printf("Finding version...")
 		appConfig.Version = getCurrentModuleVersion(appConfig.Module)
+		log.Printf("ok: %s\n", appConfig.Version)
 	}
 }
 
