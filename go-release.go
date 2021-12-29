@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gigurra/go-release/internal/cliUtil"
 	"github.com/gigurra/go-release/internal/config"
-	"github.com/gigurra/go-release/internal/fileutil"
-	"github.com/gigurra/go-release/internal/shell"
-	"github.com/gigurra/go-release/internal/stringutil"
+	"github.com/gigurra/go-util/cliUtil"
+	"github.com/gigurra/go-util/fileutil"
+	"github.com/gigurra/go-util/shell"
+	"github.com/gigurra/go-util/stringutil"
 	"github.com/hashicorp/go-version"
 	"github.com/thoas/go-funk"
 	"github.com/urfave/cli/v2"
