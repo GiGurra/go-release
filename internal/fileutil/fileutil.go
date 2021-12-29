@@ -1,9 +1,11 @@
 package fileutil
 
 import (
+	"github.com/thoas/go-funk"
 	"log"
 	"os"
 	"regexp"
+	"strings"
 )
 
 func DeleteIfExists(path string, notDeterminableMsg string) {
@@ -56,6 +58,28 @@ func File2String(path string) string {
 		panic("Failed reading file '" + path + "' due to " + err.Error())
 	}
 	return string(bytes)
+}
+
+func ListFolder(path string) []os.DirEntry {
+	info, err := os.ReadDir(path)
+	if err != nil {
+		panic("Failed listing files on path '" + path + "' due to " + err.Error())
+	}
+	return info
+}
+
+func ListFilesInFolder(path string) []os.DirEntry {
+	all := ListFolder(path)
+	return funk.Filter(all, func(i os.DirEntry) bool {
+		return !i.IsDir()
+	}).([]os.DirEntry)
+}
+
+func ListFilesInFolderWithSuffix(path string, suffix string) []os.DirEntry {
+	all := ListFilesInFolder(path)
+	return funk.Filter(all, func(i os.DirEntry) bool {
+		return strings.HasSuffix(strings.ToLower(i.Name()), suffix)
+	}).([]os.DirEntry)
 }
 
 func Bytes2File(path string, bytes []byte) {

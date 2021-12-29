@@ -21,6 +21,10 @@ func TrimSpaces(lines []string) []string {
 	return funk.Map(lines, func(in string) string { return strings.TrimSpace(in) }).([]string)
 }
 
+func NonEmptyLines(source string) []string {
+	return RemoveEmptyLines(SplitLines(source))
+}
+
 func RemoveEmptyLines(lines []string) []string {
 	return funk.FilterString(TrimSpaces(lines), func(in string) bool { return len(in) > 0 })
 }
