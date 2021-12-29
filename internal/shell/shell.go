@@ -1,6 +1,7 @@
 package shell
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 )
@@ -13,7 +14,7 @@ func CommandExists(command string) bool {
 func RunCommand(program string, args ...string) string {
 
 	if !CommandExists(program) {
-		panic("k8s not on path!")
+		panic(fmt.Sprintf("%s not on path!", program))
 	}
 
 	fullCommand := program + strings.Join(args, " ")
