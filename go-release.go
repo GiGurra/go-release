@@ -41,11 +41,19 @@ func run(appConfig *config.AppConfig) {
 	figureOutModuleName(appConfig)
 	figureOutVersion(appConfig)
 	tagInGitAndPush(appConfig)
+	log.Printf("----------------------------------------")
+	log.Printf("go-release succeeded! config was:\n%+v", appConfig)
 }
 
 func tagInGitAndPush(appConfig *config.AppConfig) {
+
+	log.Printf("Creating git tag %s...", appConfig.Version)
 	shell.RunCommand("git", "tag", appConfig.Version)
+	log.Printf("ok")
+
+	log.Printf("Pushing module=%s version=%s to remote origin...", appConfig.Module, appConfig.Version)
 	shell.RunCommand("git", "push", "origin", appConfig.Version)
+	log.Printf("ok")
 }
 
 func checkUncommittedChanges(appConfig *config.AppConfig) {
@@ -54,27 +62,27 @@ func checkUncommittedChanges(appConfig *config.AppConfig) {
 		if hasUncommittedChanges() {
 			log.Fatalf("Cannot release because repo has uncommitted changes\n")
 		}
-		log.Printf("ok\n")
+		log.Printf("ok")
 	}
 }
 
 func buildModule(appConfig *config.AppConfig) {
 	log.Printf("Building module...")
 	shell.RunCommand("go", "build", ".")
-	log.Printf("ok\n")
+	log.Printf("ok")
 }
 
 func figureOutModuleName(appConfig *config.AppConfig) {
 	log.Printf("Finding module name...")
 	appConfig.Module = getCurrentModuleName()
-	log.Printf("ok: %s\n", appConfig.Module)
+	log.Printf("ok: %s", appConfig.Module)
 }
 
 func figureOutVersion(appConfig *config.AppConfig) {
 	if appConfig.Version == "" {
 		log.Printf("Finding version...")
 		appConfig.Version = getCurrentModuleVersion(appConfig.Module)
-		log.Printf("ok: %s\n", appConfig.Version)
+		log.Printf("ok: %s", appConfig.Version)
 	}
 }
 
