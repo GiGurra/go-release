@@ -24,6 +24,7 @@ func main() {
 	app.Action = func(c *cli.Context) error {
 		appConfig := config.GetDefaultAppConfig()
 		appConfig.Version = c.String(config.CliFlags.Version.Name)
+		appConfig.IgnoreUncommittedChanges = c.Bool(config.CliFlags.IgnoreUncommittedChanges.Name)
 		complementConfig(&appConfig)
 		appConfig.Validate()
 		run(appConfig)
@@ -37,6 +38,11 @@ func main() {
 }
 
 func run(appConfig config.AppConfig) {
+
+	if !appConfig.IgnoreUncommittedChanges && hasUncommittedChanges() {
+		log.Fatalf("Cannot release because repo has uncommitted changes\n")
+	}
+
 	log.Printf("Building %+v...\n", appConfig)
 }
 
@@ -58,4 +64,9 @@ func getCurrentModuleVersion(module string) string {
 	commandResult := shell.RunCommand("./"+module, "--version")
 	parts := splitter.Split(commandResult, -1)
 	return parts[len(parts)-1]
+}
+
+func hasUncommittedChanges() bool {
+	commandResult := shell.RunCommand("git", "status", "--porcelain")
+	return commandResult != ""
 }
