@@ -23,7 +23,12 @@ func RunCommand(program string, args ...string) string {
 	outputBytes, err := cmd.Output()
 
 	if err != nil {
-		panic(`command "` + fullCommand + `" failed with error: ` + err.Error())
+		exitErr, isExitErr := err.(*exec.ExitError)
+		if isExitErr {
+			panic(`command "` + fullCommand + `" failed with error: ` + exitErr.Error() + ", stderr: " + string(exitErr.Stderr))
+		} else {
+			panic(`command "` + fullCommand + `" failed with error: ` + err.Error())
+		}
 	}
 
 	return strings.TrimSpace(string(outputBytes))
