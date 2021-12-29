@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gigurra/go-release/internal/cliUtil"
 	"github.com/gigurra/go-release/internal/config"
 	"github.com/gigurra/go-release/internal/fileutil"
 	"github.com/gigurra/go-release/internal/shell"
 	"github.com/gigurra/go-release/internal/stringutil"
+	"github.com/hashicorp/go-version"
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
@@ -83,6 +85,10 @@ func figureOutVersion(appConfig *config.AppConfig) {
 		log.Printf("Finding version...")
 		appConfig.Version = getCurrentModuleVersion(appConfig.Module)
 		log.Printf("ok: %s", appConfig.Version)
+	}
+	_, err := version.NewVersion(appConfig.Version)
+	if err != nil {
+		panic(fmt.Sprintf("not a valid version: '%s', due to: "+err.Error(), appConfig.Version))
 	}
 }
 
