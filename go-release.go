@@ -41,7 +41,6 @@ func run(appConfig *config.AppConfig) {
 	figureOutModuleName(appConfig)
 	figureOutVersion(appConfig)
 	tagInGitAndPush(appConfig)
-	log.Printf("Building %+v...\n", appConfig)
 }
 
 func tagInGitAndPush(appConfig *config.AppConfig) {
